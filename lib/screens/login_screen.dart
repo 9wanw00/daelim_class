@@ -1,5 +1,7 @@
 import 'dart:convert';
-
+import 'package:daelim_class/common/enums/sso_enum.dart';
+import 'package:daelim_class/common/extensions/context_extensions.dart';
+import 'package:daelim_class/common/widgets/gradient_divider.dart';
 import 'package:daelim_class/config.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,10 +27,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // NOTE: 로그인 API 호출
-  void _onFetchedApi() async {
+  void _onFetchedApi() async {}
+
+  // NOTE: 패스워드 재설정
+  void _onRecoveryPassword() {}
+
+  // NOTE: 로그인 버튼
+  void _onSignIn() async {
+    final email = _emailController.text;
+    final password = _pwController.text;
+
     final loginData = {
-      'email': '202030307@daelim.ac.kr',
-      'password': '202030307',
+      'email': email, // '202030307@daelim.ac.kr'
+      'password': password, // '202030307'
     };
 
     final response = await http.post(
@@ -39,27 +50,28 @@ class _LoginScreenState extends State<LoginScreen> {
     debugPrint('status: ${response.statusCode}, body: ${response.body}');
   }
 
-  // NOTE: 패스워드 재설정
-  void _onRecoveryPassword() {}
-
-  // NOTE: 로그인
-  void _onSignIn() {}
+  // NOTE: SSO 로그인 버튼
+  void _onSsoSignIn(SsoEnum type) {
+    switch (type) {
+      case SsoEnum.google:
+      case SsoEnum.apple:
+      case SsoEnum.github:
+        context.showSnackBarText(text: '준비 중인 기능입니다.');
+        break;
+    }
+  }
 
   // NOTE: 타이틀 텍스트 위젯
   List<Widget> _buildTitleText() => [
-        Text(
+        const Text(
           'Hello Again!',
-          style: GoogleFonts.poppins(
-            fontSize: 28,
-          ),
+          style: TextStyle(fontSize: 28),
         ),
         const SizedBox(height: 15),
-        Text(
+        const Text(
           'Welcome back you\'ve\nbeen missed!',
           textAlign: TextAlign.center,
-          style: GoogleFonts.poppins(
-            fontSize: 20,
-          ),
+          style: TextStyle(fontSize: 20),
         ),
       ];
 
@@ -114,6 +126,26 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  // NOTE: SSO 버튼 위젯
+  Widget _buildSsoButton({
+    required String iconUrl,
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: 80,
+        height: 70,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        padding: const EdgeInsets.all(10),
+        child: Image.network(iconUrl),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,51 +153,82 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(width: double.infinity),
-              const SizedBox(height: 36),
-              ..._buildTitleText(),
-              const SizedBox(height: 25),
-              ..._buildTextFields(),
-              const SizedBox(height: 16),
-              // Recovery Password
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: _onRecoveryPassword,
-                  child: Text(
-                    'Recovery Password',
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
+          child: DefaultTextStyle(
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: context.textTheme.bodyMedium?.color,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(width: double.infinity),
+                const SizedBox(height: 36),
+                ..._buildTitleText(),
+                const SizedBox(height: 25),
+                ..._buildTextFields(),
+                const SizedBox(height: 16),
+                // Recovery Password
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: _onRecoveryPassword,
+                    child: const Text(
+                      'Recovery Password',
+                      style: TextStyle(fontSize: 12),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 28),
-              // Sign in
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _onSignIn,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE46A61),
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                const SizedBox(height: 28),
+                // Sign in
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _onSignIn,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE46A61),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    'Sign in',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      color: Colors.white,
+                    child: const Text(
+                      'Sign in',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 40),
+                // On continue with
+                const Row(
+                  children: [
+                    Expanded(child: GradientDivider()),
+                    SizedBox(width: 15),
+                    Text('On continue with'),
+                    SizedBox(width: 15),
+                    Expanded(child: GradientDivider(reverse: true)),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                // SSO Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildSsoButton(
+                      onTap: () => _onSsoSignIn(SsoEnum.google),
+                      iconUrl: icGoogle,
+                    ),
+                    _buildSsoButton(
+                      onTap: () => _onSsoSignIn(SsoEnum.apple),
+                      iconUrl: icApple,
+                    ),
+                    _buildSsoButton(
+                      onTap: () => _onSsoSignIn(SsoEnum.github),
+                      iconUrl: icGithub,
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),

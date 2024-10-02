@@ -3,6 +3,8 @@ import 'package:daelim_class/common/enums/sso_enum.dart';
 import 'package:daelim_class/common/extensions/context_extensions.dart';
 import 'package:daelim_class/common/widgets/gradient_divider.dart';
 import 'package:daelim_class/config.dart';
+import 'package:daelim_class/helpers/storage_helper.dart';
+import 'package:daelim_class/models/auth_data.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -47,7 +49,21 @@ class _LoginScreenState extends State<LoginScreen> {
       body: jsonEncode(loginData),
     );
 
-    debugPrint('status: ${response.statusCode}, body: ${response.body}');
+    final statusCode = response.statusCode;
+    final body = utf8.decode(response.bodyBytes);
+
+    if (statusCode != 200) {
+      if (mounted) {
+        return context.showSnackBar(
+          content: Text(body),
+        );
+      }
+    }
+
+    final authData = AuthData.fromMap(jsonDecode(body));
+    await StorageHelper.setAuthData(authData);
+    final savedAuthData = StorageHelper.authData;
+    debugPrint(savedAuthData.toString());
   }
 
   // NOTE: SSO 로그인 버튼

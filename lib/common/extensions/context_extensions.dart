@@ -7,6 +7,11 @@ extension BuildContextExtension on BuildContext {
   void showSnackBar({required Widget content}) {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 8,
+        ),
         content: content,
       ),
     );

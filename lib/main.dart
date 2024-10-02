@@ -1,8 +1,11 @@
+import 'package:daelim_class/helpers/storage_helper.dart';
 import 'package:daelim_class/screens/login_screen.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await StorageHelper.initialized();
   runApp(const MyApp());
 }
 
@@ -44,6 +47,8 @@ class MyApp extends StatelessWidget {
         swapLegacyOnMaterial3: true,
       ),
       home: const LoginScreen(),
+      themeMode: ThemeMode.light,
+      routerConfig: router,
     );
   }
 }

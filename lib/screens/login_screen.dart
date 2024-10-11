@@ -5,7 +5,9 @@ import 'package:daelim_class/common/widgets/gradient_divider.dart';
 import 'package:daelim_class/config.dart';
 import 'package:daelim_class/helpers/storage_helper.dart';
 import 'package:daelim_class/models/auth_data.dart';
+import 'package:daelim_class/routes/app_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
@@ -45,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
     };
 
     final response = await http.post(
-      Uri.parse(authUrl),
+      Uri.parse(getTokenUrl),
       body: jsonEncode(loginData),
     );
 
@@ -54,16 +56,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (statusCode != 200) {
       if (mounted) {
-        return context.showSnackBar(
+        context.showSnackBar(
           content: Text(body),
         );
       }
+      return;
     }
 
+    // NOTE: AuthData 로 변환
     final authData = AuthData.fromMap(jsonDecode(body));
     await StorageHelper.setAuthData(authData);
     final savedAuthData = StorageHelper.authData;
     debugPrint(savedAuthData.toString());
+
+    mounted ? context.go(AppScreen.main.toPath) : null;
   }
 
   // NOTE: SSO 로그인 버튼

@@ -1,27 +1,24 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:daelim_class/routes/app_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:daelim_class/routes/app_screen.dart';
 
 class AppNavigationRail extends StatelessWidget {
   final AppScreen appScreen;
-
   const AppNavigationRail({
     super.key,
     required this.appScreen,
   });
-
-  // 수정 필요
   @override
   Widget build(BuildContext context) {
-    final screens =
-        AppScreen.values.where((e) => e != AppScreen.login).toList();
-
+    final screens = List<AppScreen>.from(AppScreen.values);
+    screens.removeAt(0);
     return NavigationRail(
       onDestinationSelected: (value) {
         final screen = screens[value];
         context.pushNamed(screen.name);
       },
-      selectedIndex: screens.indexOf(appScreen),
+      selectedIndex: appScreen.index - 1,
       destinations: screens.map((e) {
         return NavigationRailDestination(
           icon: Icon(e.getIcon),

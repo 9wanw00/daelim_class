@@ -21,7 +21,7 @@ extension AppScreenExtension on AppScreen {
       case AppScreen.setting:
         return Icons.settings;
       default:
-        return Icons.help;
+        return Icons.face;
     }
   }
 }

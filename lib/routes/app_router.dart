@@ -1,21 +1,22 @@
 import 'package:daelim_class/helpers/storage_helper.dart';
-import 'package:daelim_class/main/main_screen.dart';
 import 'package:daelim_class/routes/app_screen.dart';
-import 'package:daelim_class/screens/login_screen.dart';
-import 'package:daelim_class/setting/setting_screen.dart';
-import 'package:flutter/foundation.dart';
+import 'package:daelim_class/screens/login/login_screen.dart';
+import 'package:daelim_class/screens/main/main_screen.dart';
+import 'package:daelim_class/screens/setting/setting_screen.dart';
+import 'package:easy_extension/easy_extension.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(
   initialLocation: AppScreen.login.toPath,
   redirect: (context, state) {
-    debugPrint(state.fullPath);
+    Log.green('Route FullPath: ${state.fullPath}');
 
-    if (state.fullPath != AppScreen.login.toPath) {
-      if (StorageHelper.authData == null) {
-        return AppScreen.login.toPath;
-      }
+    if (state.fullPath == AppScreen.login.toPath) {
       return null;
+    }
+
+    if (StorageHelper.authData == null) {
+      return AppScreen.login.toPath;
     }
 
     return null;
@@ -25,9 +26,7 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppScreen.login.toPath,
       name: AppScreen.login.name,
-      pageBuilder: (context, state) => const NoTransitionPage(
-        child: LoginScreen(),
-      ),
+      builder: (context, state) => const LoginScreen(),
     ),
     // NOTE: 메인 화면
     GoRoute(
@@ -37,7 +36,7 @@ final appRouter = GoRouter(
         child: MainScreen(),
       ),
     ),
-    // NOTE: 세팅 화면
+    // NOTE: 설정 화면
     GoRoute(
       path: AppScreen.setting.toPath,
       name: AppScreen.setting.name,
